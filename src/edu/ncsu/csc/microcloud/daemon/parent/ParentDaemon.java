@@ -1,12 +1,11 @@
 package edu.ncsu.csc.microcloud.daemon.parent;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 
 public class ParentDaemon {
-
+	private static final String CLASS_NAME = ParentDaemon.class.getCanonicalName();
 	/**
 	 * @param args
 	 */
@@ -17,13 +16,8 @@ public class ParentDaemon {
 			System.out.println("Waiting for connections");
 			while(true){
 				Socket socket = listener.accept();
-				try{
-					System.out.println(socket.getInetAddress());
-					PrintWriter outputStream = new PrintWriter(socket.getOutputStream(), true);
-					outputStream.println(socket.getInetAddress());
-				}finally{
-					socket.close();
-				}
+				Thread t = new Thread(new ParentDaemonThread(socket));
+				t.start();
 			}
 		}finally{
 			listener.close();
